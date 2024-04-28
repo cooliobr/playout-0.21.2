@@ -232,7 +232,7 @@ fn pad(aspect: f64, chain: &mut Filters, v_stream: &ffprobe::Stream, config: &Pl
             ),
         };
 
-        //chain.add_filter(&pad, 0, Video)
+        chain.add_filter(&pad, 0, Video)
     }
 }
 
