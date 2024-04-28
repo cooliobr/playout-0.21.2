@@ -263,7 +263,7 @@ fn scale(
                     &[&config.processing.width, &config.processing.height],
                 ),
                 None => format!(
-                    "scale_npp={}:{}:format=yuv420p",
+                    "scale_npp=format=yuv420p,scale_npp=1280:720:interp_algo=super:force_original_aspect_ratio=decrease",
                     config.processing.width, config.processing.height
                 ),
             };
@@ -288,7 +288,7 @@ fn scale(
                 &[&config.processing.width, &config.processing.height],
             ),
             None => format!(
-                "scale_npp={}:{}:format=yuv420p",
+                "scale_npp=format=yuv420p,scale_npp=1280:720:interp_algo=super:force_original_aspect_ratio=decrease",
                 config.processing.width, config.processing.height
             ),
         };
@@ -383,7 +383,7 @@ fn overlay(node: &mut Media, chain: &mut Filters, config: &PlayoutConfig) {
                     &format!(",{logo_scale}"),
                     &[&config.processing.logo_scale],
                 )),
-                None => logo_chain.push_str(&format!(",scale=iw*{}", config.processing.logo_scale)),
+                None => logo_chain.push_str(&format!(",scale=iw*{},", config.processing.logo_scale)),
             }
         }
 
