@@ -227,7 +227,7 @@ fn pad(aspect: f64, chain: &mut Filters, v_stream: &ffprobe::Stream, config: &Pl
                 ],
             ),
             None => format!(
-                "{}pad=max(iw\\,ih*({1}/{2})):ow/({1}/{2}):(ow-iw)/2:(oh-ih)/2",
+                "{}hwdownload,pad={}:{}:(ow-iw)/2:(oh-ih)/2:color=black,setdar=16:9,setsar=1:1,hwupload",
                 scale, config.processing.width, config.processing.height
             ),
         };
@@ -263,7 +263,7 @@ fn scale(
                     &[&config.processing.width, &config.processing.height],
                 ),
                 None => format!(
-                    "scale_npp=format=yuv420p,scale_npp=1280:720:interp_algo=super:force_original_aspect_ratio=decrease",
+                    "scale_npp=format=yuv420p,scale_npp={}:{}:interp_algo=super:force_original_aspect_ratio=decrease",
                     config.processing.width, config.processing.height
                 ),
             };
@@ -288,7 +288,7 @@ fn scale(
                 &[&config.processing.width, &config.processing.height],
             ),
             None => format!(
-                "scale_npp=format=yuv420p,scale_npp=1280:720:interp_algo=super:force_original_aspect_ratio=decrease",
+                "scale_npp=format=yuv420p,scale_npp={}:{}:interp_algo=super:force_original_aspect_ratio=decrease",
                 config.processing.width, config.processing.height
             ),
         };
