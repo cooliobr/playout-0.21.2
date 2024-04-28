@@ -31,7 +31,7 @@ fn check_media(
     begin: f64,
     config: &PlayoutConfig,
 ) -> Result<(), ProcError> {
-    let mut dec_cmd = vec_strings!["-hide_banner", "-nostats", "-v", "level+info"];
+    let mut dec_cmd = vec_strings!["-hide_banner", "-nostats", "-threads", "4", "-hwaccel", "cuvid", "-c:v", "h264_cuvid", "-fix_sub_duration", "-drop_second_field", "true", "-v", "level+info"];
     let mut error_list = vec![];
     let mut config = config.clone();
     config.out.mode = Null;
