@@ -45,7 +45,7 @@ fn ingest_to_hls_server(
 ) -> Result<(), Error> {
     let playlist_init = playout_stat.list_init;
 
-    let mut server_prefix = vec_strings!["-hide_banner", "-nostats", "-v", "level+info"];
+    let mut server_prefix = vec_strings!["-hide_banner", "-nostats", "-threads", "4", "-hwaccel", "cuvid", "-c:v", "h264_cuvid", "-fix_sub_duration", "-drop_second_field", "true", "-v", "level+info"];
     let stream_input = config.ingest.input_cmd.clone().unwrap();
     let mut dummy_media = Media::new(0, "Live Stream", false);
     dummy_media.unit = Ingest;
