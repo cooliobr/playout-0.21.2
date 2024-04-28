@@ -232,7 +232,7 @@ fn pad(aspect: f64, chain: &mut Filters, v_stream: &ffprobe::Stream, config: &Pl
             ),
         };
 
-        chain.add_filter(&pad, 0, Video)
+        //chain.add_filter(&pad, 0, Video)
     }
 }
 
@@ -243,7 +243,7 @@ fn fps(fps: f64, chain: &mut Filters, config: &PlayoutConfig) {
             None => format!("fps={}", config.processing.fps),
         };
 
-        chain.add_filter(&fps_filter, 0, Video)
+        //chain.add_filter(&fps_filter, 0, Video)
     }
 }
 
@@ -263,7 +263,7 @@ fn scale(
                     &[&config.processing.width, &config.processing.height],
                 ),
                 None => format!(
-                    "scale={}:{}",
+                    "scale_npp={}:{}:format=yuv420p",
                     config.processing.width, config.processing.height
                 ),
             };
@@ -279,7 +279,7 @@ fn scale(
                 None => format!("setdar=dar={}", config.processing.aspect),
             };
 
-            chain.add_filter(&dar, 0, Video);
+            //chain.add_filter(&dar, 0, Video);
         }
     } else {
         let scale = match &ADVANCED_CONFIG.decoder.filters.scale {
@@ -288,7 +288,7 @@ fn scale(
                 &[&config.processing.width, &config.processing.height],
             ),
             None => format!(
-                "scale={}:{}",
+                "scale_npp={}:{}:format=yuv420p",
                 config.processing.width, config.processing.height
             ),
         };
@@ -299,7 +299,7 @@ fn scale(
             None => format!("setdar=dar={}", config.processing.aspect),
         };
 
-        chain.add_filter(&dar, 0, Video);
+        //chain.add_filter(&dar, 0, Video);
     }
 }
 
@@ -326,7 +326,7 @@ fn fade(node: &mut Media, chain: &mut Filters, nr: i32, filter_type: FilterType)
             fade_in = custom_format(fade, &[t]);
         };
 
-        chain.add_filter(&fade_in, nr, filter_type);
+        //chain.add_filter(&fade_in, nr, filter_type);
     }
 
     if (node.out != node.duration && node.out - node.seek > 1.0) || fade_audio {
@@ -340,7 +340,7 @@ fn fade(node: &mut Media, chain: &mut Filters, nr: i32, filter_type: FilterType)
             fade_out = custom_format(fade, &[t]);
         };
 
-        chain.add_filter(&fade_out, nr, filter_type);
+        //chain.add_filter(&fade_out, nr, filter_type);
     }
 }
 
@@ -350,7 +350,7 @@ fn overlay(node: &mut Media, chain: &mut Filters, config: &PlayoutConfig) {
         && &node.category != "advertisement"
     {
         let mut logo_chain = format!(
-            "null[v];movie={}:loop=0,setpts=N/(FRAME_RATE*TB),format=rgba,colorchannelmixer=aa={}",
+            "null[v];movie={}[l0];[l0]format=rgba,colorchannelmixer=aa={}",
             config
                 .processing
                 .logo
@@ -383,7 +383,7 @@ fn overlay(node: &mut Media, chain: &mut Filters, config: &PlayoutConfig) {
                     &format!(",{logo_scale}"),
                     &[&config.processing.logo_scale],
                 )),
-                None => logo_chain.push_str(&format!(",scale={}", config.processing.logo_scale)),
+                None => logo_chain.push_str(&format!(",scale=iw*{}", config.processing.logo_scale)),
             }
         }
 
@@ -396,7 +396,8 @@ fn overlay(node: &mut Media, chain: &mut Filters, config: &PlayoutConfig) {
                 logo_chain.push_str(&custom_format(overlay, &[&config.processing.logo_position]))
             }
             None => logo_chain.push_str(&format!(
-                "[l];[v][l]overlay={}:shortest=1",
+                "hwupload_cuda[l];[v][l]overlay_cuda={}:shortest=1",
+                //",hwupload_cuda[l];[v][l]overlay_cuda=main_w-overlay_w-33:33"
                 config.processing.logo_position
             )),
         };
@@ -421,7 +422,7 @@ fn extend_video(node: &mut Media, chain: &mut Filters) {
                 None => format!("tpad=stop_mode=add:stop_duration={duration}"),
             };
 
-            chain.add_filter(&tpad, 0, Video)
+            //chain.add_filter(&tpad, 0, Video)
         }
     }
 }
